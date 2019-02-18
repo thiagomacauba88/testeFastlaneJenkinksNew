@@ -15,35 +15,15 @@
 
 default_platform(:ios)
 
-platform :ios do |options|
-  before_all do |lane,options|
+platform :ios do
+  before_all do
     sh "pod install"
   end
   desc "Description of what the lane does"
-  lane :CI do
-      run_tests(project: "TesteFastlaneJenkins.xcodeproj",
-      devices: ["iPhone 8"],
-      scheme: "TesteFastlaneJenkins")
+  lane :custom_lane do
+    xcodebuild(
+      workspace: "Teste.xcworkspace",
+      scheme: "Teste"
+    )
   end
-
-  lane :Build do
-      xcodebuild(project: "TesteFastlaneJenkins.xcworkspace",
-      scheme: "TesteFastlaneJenkins")
-  end
- 
-  lane :CD do |values|
- 
-    gym(scheme: 'TesteFastlaneJenkins', project: "TesteFastlaneJenkins.xcodeproj", clean: true, silent: true, include_bitcode: false, export_method: 'ad-hoc')
- 
-    emails = values[:test_email] ? values[:test_email] : ['[thiago.freitas@valecard.com.br]'] # You can list more emails here
-    groups = values[:test_email] ? nil : nil # You can define groups on the web and reference them here
- 
-    #crashlytics(api_token: '[CRASHLYTICS_API_TOKEN]',
-     #        build_secret: '[CRASHLYTICS_ORG_SECRET]',
-      #             emails: emails,
-       #            groups: groups,
-        #            notes: 'Distributed with fastlane', # Check out the changelog_from_git_commits action
-         #   notifications: true) # Should this distribution notify your testers via email?
- 
-    end
 end
